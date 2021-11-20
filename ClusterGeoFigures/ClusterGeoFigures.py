@@ -15,11 +15,21 @@ from matplotlib.pyplot import figure
 
 from ClusterGeoFigures.No_Of_Neighbours import No_Of_Neighbours
 
+from openpyxl import Workbook
+from openpyxl.styles import Border, Side, PatternFill, Font, GradientFill, Alignment
+
 class ClusterGeoFigures_Program:
 	def __init__(self, r_cut, elements=['Cu','Pd'],path_to_here='.'):
 		self.path_to_here = os.path.abspath(path_to_here)
 		self.r_cut = r_cut
 		self.elements = elements
+
+		self.to_save = []
+		self.to_save += ['Cu_bulk','bulk','percent_bulk']
+		self.to_save += ['Cu_face','face','percent_face']
+		self.to_save += ['Cu_edge','edge','percent_edge']
+		self.to_save += ['Cu_vertex','vertex','percent_vertex']
+
 		self.run()
 
 	def run(self):
@@ -33,8 +43,12 @@ class ClusterGeoFigures_Program:
 		print('Finished analysing data')
 		print('--------------------------------------')
 		print('Making plots')
-		self.make_plots(cluster_information)
+		cluster_plot_data = self.make_plots(cluster_information)
 		print('Finished making plots')
+		print('--------------------------------------')
+		print('Making excel spreadsheet')
+		self.record_to_excel(cluster_plot_data)
+		print('Finished excel spreadsheet')
 		print('--------------------------------------')
 
 	def get_cluster_data(self):
@@ -79,9 +93,10 @@ class ClusterGeoFigures_Program:
 			#import pdb; pdb.set_trace()
 		return cluster_information
 
-	def make_plots(self, cluster_information):
-		cluster_information = [(key, Cu_number_of_neighbours, all_number_of_neighbours, cluster) for key, (Cu_number_of_neighbours, all_number_of_neighbours, cluster) in cluster_information.items()]
+	def make_plots(self, cluster_information_overall):
+		cluster_information = [(key, Cu_number_of_neighbours, all_number_of_neighbours, cluster) for key, (Cu_number_of_neighbours, all_number_of_neighbours, cluster) in cluster_information_overall.items()]
 		cluster_information.sort()
+		cluster_plot_data = {}
 		no_of_copper_atoms = []
 		bulk_data   = [] # 12+ neighbours
 		face_data   = [] # 9-11 neighbours
@@ -133,7 +148,12 @@ class ClusterGeoFigures_Program:
 			face_data.append(percent_face)
 			edge_data.append(percent_edge)
 			vertex_data.append(percent_vertex)
-			#import pdb; pdb.set_trace()
+			# ---------------------------------------------------------------------
+			cluster_plot_data[key] = {}
+			for data_name in self.to_save:
+				cluster_plot_data[key][data_name] = eval(data_name)
+			# ---------------------------------------------------------------------
+
 		figure(figsize=(8, 3), dpi=80)
 		plt.plot([0, self.greatest_no_of_atoms], [0, 100], c='k', ls='-', lw=2.0)
 		plt.scatter(no_of_copper_atoms,vertex_data,c='green')
@@ -146,3 +166,39 @@ class ClusterGeoFigures_Program:
 		plt.xlim((0-1,self.greatest_no_of_atoms+1))
 		plt.tight_layout()
 		plt.savefig('percent_Cu_comp_vs_no_Cu_atoms.png')
+		return cluster_plot_data
+
+	def record_to_excel(self, cluster_plot_data):
+		cluster_plot_data = [(key, data) for key, data in cluster_plot_data.items()]
+		cluster_plot_data.sort()
+
+		workbook = Workbook()
+		worksheet = workbook.active
+
+		# pink, red, blue, green
+		colours = {'bulk': 'FFC0CB', 'face': 'FF0000', 'edge': 'ADD8E6', 'vertex': '90EE90', 'None': 'FFFFFF'}
+		def get_colour_name(name):
+			for colour_name in colours.keys():
+				if colour_name in name:
+					return colour_name
+			return 'None'
+
+		naming = [str(tuple(self.elements))]+self.to_save
+		for index in range(len(naming)):
+			name = naming[index]
+			worksheet.cell(column=index+1, row=1, value=str(name))
+			worksheet.cell(column=index+1, row=1).fill = PatternFill("solid", fgColor=colours[get_colour_name(name)])
+
+		for index in range(len(cluster_plot_data)):
+			key, data = cluster_plot_data[index]
+			worksheet.cell(column=1, row=index+2, value=str(key))
+			for index2 in range(len(self.to_save)):
+				name = self.to_save[index2]
+				if 'percent' in name:
+					number = round(data[name],1)
+				else:
+					number = data[name]
+				worksheet.cell(column=index2+2, row=index+2, value=str(number))
+				worksheet.cell(column=index2+2, row=index+2).fill = PatternFill("solid", fgColor=colours[get_colour_name(name)])
+		# Save the file
+		workbook.save("ClusterGeo_Data.xlsx")
