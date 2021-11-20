@@ -196,6 +196,8 @@ class ClusterGeoFigures_Program:
 				name = self.to_save[index2]
 				if 'percent' in name:
 					number = round(data[name],1)
+					if number < 0:
+						number = ''
 				else:
 					number = data[name]
 				worksheet.cell(column=index2+2, row=index+2, value=str(number))
