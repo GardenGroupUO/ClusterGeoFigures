@@ -1,7 +1,7 @@
 # The information about the ClusterGeoFigures program
 
 __name__    = 'The ClusterGeoFigures Program'
-__version__ = '1.0'
+__version__ = '1.1'
 __author__  = 'Dr. Geoffrey Weal, Dr. Caitlin Casey-Stevens and Dr. Anna Garden'
 
 print('######################################################')
