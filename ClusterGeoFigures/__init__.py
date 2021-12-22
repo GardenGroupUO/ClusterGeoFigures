@@ -1,7 +1,7 @@
 # The information about the ClusterGeoFigures program
 
 __name__    = 'The ClusterGeoFigures Program'
-__version__ = '1.1'
+__version__ = '1.2'
 __author__  = 'Dr. Geoffrey Weal, Dr. Caitlin Casey-Stevens and Dr. Anna Garden'
 
 print('######################################################')
@@ -123,6 +123,9 @@ if not found:
 	toString += 'These instructions will ask you to install asap3 by typing the following into your terminal\n'
 	toString += 'pip3 install --user --upgrade asap3\n'
 	toString += '\n'
+	toString += 'It is recommended to install asap3 version 3.11.10\n'
+	toString += 'pip3 install --user --upgrade asap3==3.11.10\n'
+	toString += '\n'
 	toString += 'This program will exit before beginning'+'\n'
 	toString += '================================================'+'\n'
 	raise ImportError(toString)	
@@ -149,6 +152,26 @@ if version.parse(ase.__version__) < version.parse(ase_version_minimum):
 	toString += 'This program will exit before beginning'+'\n'
 	toString += '================================================'+'\n'
 	raise ImportError(toString)
+
+openpyxl_spec = importlib.util.find_spec("openpyxl")
+found = openpyxl_spec is not None
+
+if not found:
+	toString = ''
+	toString += '\n'
+	toString += '================================================'+'\n'
+	toString += 'This is the ClusterGeoFigures Program'+'\n'
+	toString += 'Version: '+str(__version__)+'\n'
+	toString += '\n'
+	toString += 'The ClusterGeoFigures program requires openpyxl.'+'\n'
+	toString += '\n'
+	toString += 'Install openpyxl through pip by following the instruction in https://github.com/GardenGroupUO/ClusterGeoFigures'+'\n'
+	toString += 'These instructions will ask you to install openpyxl by typing the following into your terminal\n'
+	toString += 'pip3 install --user --upgrade openpyxl\n'
+	toString += '\n'
+	toString += 'This program will exit before beginning'+'\n'
+	toString += '================================================'+'\n'
+	raise ImportError(toString)	
 
 # ------------------------------------------------------------------------------------------------------------------------
 

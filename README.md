@@ -23,6 +23,7 @@ ClusterGeoFigures requires the following programs before it can be used:
 * Atomic Simulation Environment (ASE): https://wiki.fysik.dtu.dk/ase/
 * ASAP3: https://wiki.fysik.dtu.dk/asap
 * Packaging
+* Openpyxl
 
 The easiest way to install these is through pip. Type the following two lines into the terminal: 
 
@@ -30,6 +31,7 @@ The easiest way to install these is through pip. Type the following two lines in
 
 	pip3 install --upgrade --user ase packaging
 	pip3 install --upgrade --user asap3==3.11.10
+	pip3 install --upgrade --user openpyxl
 
 See https://pip.pypa.io/en/stable/installation/ if you do not have pip installed on your computer. 
 
@@ -62,11 +64,13 @@ An example of the script used to run this program is given below, called ``Run_C
 ```python
 from ClusterGeoFigures import ClusterGeoFigures_Program
 
-r_cut = 3.0
+r_cut = 2.9
 elements = ['Cu','Pd']
+focus_plot_with_respect_to_element = 'Pd'
 path_to_xyz_files = 'dft_mins'
+add_legend = False
 
-ClusterGeoFigures_Program(r_cut,elements,path_to_xyz_files)
+ClusterGeoFigures_Program(r_cut,elements,focus_plot_with_respect_to_element,path_to_xyz_files,add_legend)
 ```
 
 When you execute this program by running ``python3 Run_ClusterGeoFigures.py`` in the terminal, ClusterGeoFigures will 
@@ -77,7 +81,7 @@ When you execute this program by running ``python3 Run_ClusterGeoFigures.py`` in
 
 ## Output files that are created by ClusterGeoFigures
 
-
+Figures placed in folder called ``ClusterGeoFigures_figures_folder``
 
 ## Other useful programs in ClusterGeoFigures
 
